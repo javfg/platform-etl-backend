@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.com/opentargets/platform-etl-backend.svg?branch=master)](https://travis-ci.com/opentargets/platform-etl-backend)
+![Build status](https://github.com/opentargets/platform-etl-backend/actions/workflows/build.yaml/badge.svg)
 
 # Open Targets Post-Pipeline ETL process
 
-OpenTargets ETL pipeline to process Pipeline output in order to obtain a new API shaped entities. For the file 
+OpenTargets ETL pipeline to process Pipeline output in order to obtain a new API shaped entities. For the file
 `platformDataBackend.sc`
 
 ## platformDataBackend.sc
@@ -26,7 +26,7 @@ necessary.
 
 Configure the run using the [profile](profiles/config.default).
 You should only need to modify the Ensembl, Chembl and data versions.
-Other profiles can be created and used by running `make set_profile profile=<profile_suffix>` where <profile_suffix> 
+Other profiles can be created and used by running `make set_profile profile=<profile_suffix>` where <profile_suffix>
 would be "dev" if the profile file was called "config.dev".
 
 #### Step 2. Run
@@ -62,10 +62,10 @@ found [in the documentation](https://spark.apache.org/docs/latest/api/scala/org/
 #### Additional output formats
 
 Typically all outputs should use `common.output-format` to specify a Spark supported write format ("json", "parquet",
-etc). Relying on this value allows us to read in pre-computed steps easily. 
+etc). Relying on this value allows us to read in pre-computed steps easily.
 
-If you require outputs in additional formats, complete the `common.additional-outputs` section. Metadata is not 
-generated for these additional sources. 
+If you require outputs in additional formats, complete the `common.additional-outputs` section. Metadata is not
+generated for these additional sources.
 
 #### Configuring Spark
 
@@ -75,7 +75,7 @@ adjust any other fields as necessary from the `reference.conf` template:
 ```conf
 spark-uri = "local[*]"
 common {
- ...  
+ ...
 }
 ```
 
@@ -124,7 +124,7 @@ Simply run one of the following commands:
 ```bash
 sbt assembly
 ```
-or 
+or
 ```bash
 make build
 ```
@@ -248,7 +248,7 @@ not 'drugs'. We define a drug to be any molecule that meets one or more of the f
 #### Inputs
 
 | Input | Source | Notes |
-| --- | --- | --- | 
+| --- | --- | --- |
 | chembl-molecule | [ChEMBL](https://www.ebi.ac.uk/chembl/) | Provided from PIS using ChEMBL private ES server. |
 | chembl-indication | [ChEMBL](https://www.ebi.ac.uk/chembl/) | Provided from PIS using ChEMBL private ES server. |
 | chembl-mechanism | [ChEMBL](https://www.ebi.ac.uk/chembl/)| Provided from PIS using ChEMBL private ES server. |
@@ -261,19 +261,19 @@ not 'drugs'. We define a drug to be any molecule that meets one or more of the f
 #### Adding additional resources to enrich data
 
 Addition resources can be specified to enrich the data included in the outputs. The following `extension-type`s are
- supported: 
- 
+ supported:
+
  - `synonyms`
  - `cross-references`
- 
-See the sections below for more details on required data structure and limitations. 
 
-Additional resources are specified in the configuration as follows:  
+See the sections below for more details on required data structure and limitations.
+
+Additional resources are specified in the configuration as follows:
 ```
       drug-extensions = [
         {
           extension-type = <extension type>
-          path = <path to file> 
+          path = <path to file>
         }
       ]
     }
@@ -282,46 +282,46 @@ Additional resources are specified in the configuration as follows:
 
 The Drug Beta step supports the addition of supplementary synonym data sources subject to the following limitations:
 
-- The input file(s) must be: 
+- The input file(s) must be:
   - in json format
-  - have a field called 'id' which maps 1-to-1 to either a Drugbank ID or ChEMBL ID. The 'id' field must not contain a 
+  - have a field called 'id' which maps 1-to-1 to either a Drugbank ID or ChEMBL ID. The 'id' field must not contain a
   mixture of both. If the ID is unknown the data will be discarded silently. If a mixture of ids are provided, it is
-   indeterminate which of the two will be used. 
-  - have a field called 'synonyms' which are either Strings or arrays of Strings linked to the 'id' field. 
-  
+   indeterminate which of the two will be used.
+  - have a field called 'synonyms' which are either Strings or arrays of Strings linked to the 'id' field.
+
 The input files are specified in the configuration file under the field `drug-extensions`. The files can contain
- additional columns; these will be safely ignored. 
- 
+ additional columns; these will be safely ignored.
+
 New synonyms are added to the 'synonyms' field on the object if they are not already present in either 'synonyms' or
 'trade names'. At present it is not possible to add new fields to 'trade names'.
 
-##### Cross references 
+##### Cross references
 
 The Drug Beta step supports the addition of supplementary cross reference data sources subject to the following
  limitations:
 
-- The input file(s) must: 
+- The input file(s) must:
   - in json format
-  - have a fields: 
+  - have a fields:
     - 'id' which maps 1-to-1 to a ChEMBL ID.
     - 'source'
-    - 'reference'  
+    - 'reference'
 
-For example: 
+For example:
 
 ```jsonl
 {"id": ..., "source": ..., "reference": ... }
 ```
-  
+
 The input files are specified in the configuration file under the field `drug-extensions`. The files can contain
- additional columns; these will be safely ignored. 
- 
+ additional columns; these will be safely ignored.
+
 If the `source` already exists the new references will be appended to the existing ones, provided that the `reference
-` is not already present. If the `source` does not exist it will be created. 
- 
+` is not already present. If the `source` does not exist it will be created.
+
 #### Inputs
 
-Inputs are specified in the `reference.conf` file and include the following: 
+Inputs are specified in the `reference.conf` file and include the following:
 
 | Name | Source |
 | --- | --- |
@@ -335,9 +335,9 @@ The `Drug` step also relies on several other outputs from the ETL:
 
 | Name in Drug | Field in configuration file |
 | --- | --- |
-| `efo` | disease | 
-| `gene` | target | 
-| `evidence` | evidence | 
+| `efo` | disease |
+| `gene` | target |
+| `evidence` | evidence |
 
 #### Outputs
 
@@ -351,18 +351,18 @@ Each of these outputs includes a field `id` to allow later linkages between them
 
 ### Epmc
 
-This step was incorporated into the ETL to generate the EPMC evidence file used in the Evidence step. This was 
+This step was incorporated into the ETL to generate the EPMC evidence file used in the Evidence step. This was
 originally managed by the Open Targets Data Team but moved here to reduce release friction.
 
 #### Inputs
 
 `cooccurences` files generated through the `processing` step of the [Literature pipeline](https://github.
-com/opentargets/platform-etl-literature/). 
+com/opentargets/platform-etl-literature/).
 
 #### Configuration
 
-The flag `print-metrics` optionally logs statistics about the generated data. Data is cached before metrics are 
-generated, so it is not _too_ deleterious to performance to run this. 
+The flag `print-metrics` optionally logs statistics about the generated data. Data is cached before metrics are
+generated, so it is not _too_ deleterious to performance to run this.
 
 ### Baseline Expression
 
@@ -492,12 +492,12 @@ the data. Options for parsing the inputs should not need to be updated.
     - File provided by ChEMBL: https://storage.googleapis.com/otar001-core/Tractability/21.
       08/tractability_buckets_<latest>.tsv
 1. GenCode
-    - This is used to find the canonical transcript IDs for each gene and their relevant exons. This information 
-      would ideally come from Ensemble, but that won't be available until Sept 2022 at the earliest. For additional 
+    - This is used to find the canonical transcript IDs for each gene and their relevant exons. This information
+      would ideally come from Ensemble, but that won't be available until Sept 2022 at the earliest. For additional
       discussion refer to [this issue](https://github.com/opentargets/issues/issues/1947)
     - The file is available to download from: `ftp://ftp.ebi.ac.
-      uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gff3.gz`, updating the versions as 
-      necessary. 
+      uk/pub/databases/gencode/Gencode_human/release_40/gencode.v40.annotation.gff3.gz`, updating the versions as
+      necessary.
 ### OpenFDA FAERS DB
 
 The openFDA drug adverse event API returns data that has been collected from the FDA Adverse Event Reporting System (FAERS),
@@ -601,7 +601,7 @@ scalafmt is left to developers. The [Installation Guide](https://scalameta.org/s
 has simple instructions, and the process used for Ubuntu 18.04 was:
 
 ```bash
-cd /tmp/  
+cd /tmp/
 curl -Lo coursier https://git.io/coursier-cli &&
     chmod +x coursier &&
     ./coursier --help
@@ -615,11 +615,11 @@ The pre-commit hook can then be installed using:
 
 ```bash
 cd $REPOS/platform-etl-backend
-chmod +x hooks/pre-commit.scalafmt 
+chmod +x hooks/pre-commit.scalafmt
 ln -s $PWD/hooks/pre-commit.scalafmt .git/hooks/pre-commit
 ```
 
-After this, every commit will trigger scalafmt to run and ```--no-verify``` can be 
+After this, every commit will trigger scalafmt to run and ```--no-verify``` can be
 used to ignore that step if absolutely necessary.
 
 
